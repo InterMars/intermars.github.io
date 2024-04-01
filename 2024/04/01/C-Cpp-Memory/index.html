@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="C 与 MCU 内存分配单片机和芯片在本文中指的是都是MCU。C编译器将C程序划分为四部分保存于单片机内存中，分别是常量区、全局&#x2F;静态变量区、代码区、堆栈区。  了解单片机的内存，众所周知单片机是取指执行，那么单片机从哪里取指的？执行时使用的数据又存放在哪里？   C代码是以什么样的形式进入到单片机内存中的？进入到了单片机内存的哪个位置？   从C编译器到单片机的执行，程序经历了怎样的变">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C_Cpp Memory">
+<meta property="og:url" content="https://intermars.github.io/2024/04/01/C-Cpp-Memory/index.html">
+<meta property="og:site_name" content="InterMars-Blog">
+<meta property="og:description" content="C 与 MCU 内存分配单片机和芯片在本文中指的是都是MCU。C编译器将C程序划分为四部分保存于单片机内存中，分别是常量区、全局&#x2F;静态变量区、代码区、堆栈区。  了解单片机的内存，众所周知单片机是取指执行，那么单片机从哪里取指的？执行时使用的数据又存放在哪里？   C代码是以什么样的形式进入到单片机内存中的？进入到了单片机内存的哪个位置？   从C编译器到单片机的执行，程序经历了怎样的变">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://intermars.github.io/2024/04/01/C-Cpp-Memory/Cortex-M4%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84.png">
+<meta property="og:image" content="https://intermars.github.io/2024/04/01/C-Cpp-Memory/C%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E9%93%BE%E6%8E%A5%E4%B8%BA%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.png">
+<meta property="og:image" content="https://intermars.github.io/2024/04/01/C-Cpp-Memory/ImageSymbolTableSystemLocal.png">
+<meta property="og:image" content="https://intermars.github.io/2024/04/01/C-Cpp-Memory/ImageSymbolTableGlobal.png">
+<meta property="og:image" content="https://intermars.github.io/2024/04/01/C-Cpp-Memory/ImageSymbolTableMemoryMap.png">
+<meta property="og:image" content="https://intermars.github.io/2024/04/01/C-Cpp-Memory/ImageSymbolTableMemoryMap1.png">
+<meta property="og:image" content="https://intermars.github.io/2024/04/01/C-Cpp-Memory/ImageComponentSizes.png">
+<meta property="og:image" content="https://intermars.github.io/2024/04/01/C-Cpp-Memory/map%E6%96%87%E4%BB%B6%E4%B8%AD%E5%85%B6%E4%BB%96%E5%90%8D%E8%AF%8D.png">
+<meta property="og:image" content="https://intermars.github.io/2024/04/01/C-Cpp-Memory/%E5%88%9D%E5%A7%8B%E5%8C%96%E5%89%8D%E5%86%85%E5%AD%98.png">
+<meta property="og:image" content="https://intermars.github.io/2024/04/01/C-Cpp-Memory/%E5%88%9D%E5%A7%8B%E5%8C%96%E5%90%8E%E5%86%85%E5%AD%98.png">
+<meta property="og:image" content="https://intermars.github.io/2024/04/01/C-Cpp-Memory/Cpp%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D.png">
+<meta property="article:published_time" content="2024-04-01T07:42:04.000Z">
+<meta property="article:modified_time" content="2024-04-01T07:43:10.301Z">
+<meta property="article:author" content="Sandwich Joe">
+<meta property="article:tag" content="Programming">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://intermars.github.io/2024/04/01/C-Cpp-Memory/Cortex-M4%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>C_Cpp Memory</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/04/01/Cpp-Class-static-member/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://intermars.github.io/2024/04/01/C-Cpp-Memory/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&text=C_Cpp Memory"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&title=C_Cpp Memory"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&is_video=false&description=C_Cpp Memory"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=C_Cpp Memory&body=Check out this article: https://intermars.github.io/2024/04/01/C-Cpp-Memory/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&title=C_Cpp Memory"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&title=C_Cpp Memory"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&title=C_Cpp Memory"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&title=C_Cpp Memory"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&name=C_Cpp Memory&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&t=C_Cpp Memory"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#C-%E4%B8%8E-MCU-%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="toc-number">1.</span> <span class="toc-text">C 与 MCU 内存分配</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E4%B8%AD%E7%9A%84C%E7%A8%8B%E5%BA%8F%E5%AD%98%E5%82%A8"><span class="toc-number">1.1.</span> <span class="toc-text">内存中的C程序存储</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91%E4%B8%BA%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6"><span class="toc-number">1.2.</span> <span class="toc-text">C代码编译为可执行文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E4%BF%9D%E5%AD%98%E4%BA%8E-Code%EF%BC%88FLASH%EF%BC%89%E5%8C%BA%E5%9F%9F"><span class="toc-number">1.3.</span> <span class="toc-text">代码保存于 Code（FLASH）区域</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%A6%E5%8F%B7%E6%98%A0%E5%B0%84%E8%A1%A8-Image-Symbol-Table"><span class="toc-number">1.3.1.</span> <span class="toc-text">符号映射表 Image Symbol Table</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">1.3.2.</span> <span class="toc-text">小结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8B%93%E5%B1%95%EF%BC%9Amap%E6%96%87%E4%BB%B6%E4%B8%AD%E5%90%8D%E8%AF%8D%E5%8F%82%E8%80%83"><span class="toc-number">1.3.3.</span> <span class="toc-text">拓展：map文件中名词参考</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E5%88%9D%E5%A7%8B%E5%8C%96%E5%90%8E%E5%86%85%E5%AD%98%E7%9A%84%E5%8F%98%E5%8C%96"><span class="toc-number">1.4.</span> <span class="toc-text">程序运行初始化后内存的变化</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#C-%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="toc-number">2.</span> <span class="toc-text">C++ 的内存分配</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BF%AE%E8%AE%A2%E8%AE%B0%E5%BD%95"><span class="toc-number">3.</span> <span class="toc-text">修订记录</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">4.</span> <span class="toc-text">参考资料</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        C_Cpp Memory
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Sandwich Joe</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-04-01T07:42:04.000Z" class="dt-published" itemprop="datePublished">2024-04-01</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Programming/" rel="tag">Programming</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="C-与-MCU-内存分配"><a href="#C-与-MCU-内存分配" class="headerlink" title="C 与 MCU 内存分配"></a>C 与 MCU 内存分配</h1><p>单片机和芯片在本文中指的是都是MCU。<br>C编译器将C程序划分为四部分保存于单片机内存中，分别是常量区、全局&#x2F;静态变量区、代码区、堆栈区。</p>
+<ul>
+<li><pre><code>了解单片机的内存，众所周知单片机是取指执行，那么单片机从哪里取指的？执行时使用的数据又存放在哪里？
+</code></pre>
+</li>
+<li><pre><code>C代码是以什么样的形式进入到单片机内存中的？进入到了单片机内存的哪个位置？
+</code></pre>
+</li>
+<li><pre><code>从C编译器到单片机的执行，程序经历了怎样的变化。
+</code></pre>
+</li>
+<li><pre><code>在执行的过程中，内存中有怎样的变化？
+</code></pre>
+</li>
+</ul>
+<h2 id="内存中的C程序存储"><a href="#内存中的C程序存储" class="headerlink" title="内存中的C程序存储"></a>内存中的C程序存储</h2><p>不同的MCU内核、RAM、ROM区域不同，但内存机制相似，以Cortex-M4的参考手册为例。单片机将下载的程序存放到 SRAM 和 Code中。<br><img src="/2024/04/01/C-Cpp-Memory/Cortex-M4%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84.png" alt="Cortex-M4地址映射"><br>以Cortex-M4地址映射图为例，Code保存程序代码，Code是以0x00000000开始的一片ROM（FLASH）区域，SRAM保存程序数据，SRAM是以0x20000000开始的一片RAM区域，SRAM的读取速度相比于Code更快，用来保留堆栈和数据，以保证CPU的执行效率。<br>厂家 boot 程序于Code的0x00000000开始，我们的代码是以Code的0x08000000开始。</p>
+<h2 id="C代码编译为可执行文件"><a href="#C代码编译为可执行文件" class="headerlink" title="C代码编译为可执行文件"></a>C代码编译为可执行文件</h2><p>C代码经过预处理、解析、优化、生成目标文件。不同的编译器执行方式也有差异，设计代码的时候要考虑到不同编译器之间的差异。<br>通常情况下，每个阶段要处理的事情：</p>
+<ol>
+<li>预处理阶段将删除注释、插入被#include指令包含的文件内容、定义和替换由#define指令定义的符号，以及确定代码的部分内容是否应该根据一些条件编译指令进行编译。</li>
+<li>解析阶段检查语法，判断语义，生成汇编语言。</li>
+<li>优化是为了让程序能够更加高效的运行，对目标代码进行进一步处理。</li>
+<li>链接是将编译生成的目标文件同C函数库捆绑，形成一个可执行程序。</li>
+</ol>
+<p>C程序经过编译链接之后，成为可执行文件，也就是单片机可以直接执行的机器码文件。芯片下载可执行文件，保存到内存区域。<br><img src="/2024/04/01/C-Cpp-Memory/C%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E9%93%BE%E6%8E%A5%E4%B8%BA%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.png" alt="C程序编译链接为可执行文件"></p>
+<h2 id="代码保存于-Code（FLASH）区域"><a href="#代码保存于-Code（FLASH）区域" class="headerlink" title="代码保存于 Code（FLASH）区域"></a>代码保存于 Code（FLASH）区域</h2><p>程序下载到芯片的FLASH区域后，按照数据的属性分别保存于FLASH的不同位置。编译过后，Keil会自动生成 map 表，map表说明程序到内存的映射关系。</p>
+<ol>
+<li>按照数据和逻辑代码划分程序。（编译器编译生成可执行文件）</li>
+<li>将程序中不同的数据保存到内存中不同的位置。（芯片将可执行文件保存到内存中）</li>
+</ol>
+<p><strong>程序按照数据和逻辑代码划分：</strong><br>📍Code：逻辑代码保存在Code中，Code通常是FLASH。<br>📍RO-data：Read Only 只读常量 。<br>📍RW-data：Read Write 初始化后的全局&#x2F;静态变量。<br>📍ZI-data：Zero Initialize 没有初始化的静态&#x2F;全局变量。  </p>
+<p><strong>这些数据和代码被分成段，保存在内存中不同的位置：</strong><br>📍栈：存放程序的活动记录，随用随丢，用完就释放掉。<br>    函数参数；局部变量；函数调用上下文。<br>📍堆：存放动态分配的内存，由开发者负责申请和释放，关键字为malloc，free<br>📍.bss段：存放未初始化的静态或者全局变量所需空间大小<br>    未初始化的全局或静态不分配数据空间，只记录所需空间大小<br>📍.data段：存放已经初始化的静态或者全局变量以及它们的值<br>    分配数据空间，数据保存在目标文件中；data段包含经过初始化的全局变量以及它们的值<br>📍.rodata段：存放只读变量，如字符串<br>📍.text段：存放代码程序段</p>
+<h3 id="符号映射表-Image-Symbol-Table"><a href="#符号映射表-Image-Symbol-Table" class="headerlink" title="符号映射表 Image Symbol Table"></a>符号映射表 Image Symbol Table</h3><p>Keil 设置勾选 Symbols Local。<br>局部变量<br>📍.constdata 常量<br>    常量所保存的地址是从0x0800开始，常量之前是代码段，也就是保存boot和用户代码的地方。这部分内容保存在FLASH中，不会被改变，在运行的时候也不发生变化。<br>📍.data 数据<br>    里面存放已经初始化的全局变量和静态变量，在单片机上电了之后这部分被拷贝到SRAM中。<br>📍.bss<br>    未初始化的全局或静态不分配数据空间。因为没有被初始化，所以只记录这些全局变量所占据的大小，单片机上电之后，拷贝到SRAM中，全部分配0值即可。<br>📍STACK 栈<br>    申请的栈的大小<br>📍.bss<br>    在这段.bss请看下面的全局变量，就是用户申请mem1base的空间的大小。  </p>
+<p><img src="/2024/04/01/C-Cpp-Memory/ImageSymbolTableSystemLocal.png" alt="Image Symbol Table System Local"><br>Global Symbols：全局变量<br>mem1base是使用melloc函数申请的空间，保存在堆内，也就是SRAM中，那么地址就是0x20000000开始。<br><img src="/2024/04/01/C-Cpp-Memory/ImageSymbolTableGlobal.png" alt="Image Symbol Table Global Symbols"><br>Memory Map：内存映射 keil勾选项：Memory Map<br>这部分就是内存映射，程序入口，以及从keil中配置的ROM大小。<br><img src="/2024/04/01/C-Cpp-Memory/ImageSymbolTableMemoryMap.png" alt="ImageSymbolTableMemoryMap"></p>
+<p><img src="/2024/04/01/C-Cpp-Memory/ImageSymbolTableMemoryMap1.png" alt="ImageSymbolTableMemoryMap1"><br>Image component sizes：存储组成大小<br>map文件结尾，会将所有的数据统计起来，给一个总表。<br><img src="/2024/04/01/C-Cpp-Memory/ImageComponentSizes.png" alt="ImageComponentSizes"></p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>单片机将程序下载到FLASH里面，按照【代码-常量-有初值的变量-无初值的变量】的顺序保存起来。对于未初始化的变量保存其大小，统一赋0值。 map中的内存映射部分标明了文件映射到的物理地址，这部分是按照keil中配置的ROM和RAM来的。</p>
+<h3 id="拓展：map文件中名词参考"><a href="#拓展：map文件中名词参考" class="headerlink" title="拓展：map文件中名词参考"></a>拓展：map文件中名词参考</h3><p>除了程序内存对应的内容，map表里面还有一些其他名词，可以参考下表。<br><img src="/2024/04/01/C-Cpp-Memory/map%E6%96%87%E4%BB%B6%E4%B8%AD%E5%85%B6%E4%BB%96%E5%90%8D%E8%AF%8D.png" alt="map文件中其他名词"></p>
+<h2 id="程序运行初始化后内存的变化"><a href="#程序运行初始化后内存的变化" class="headerlink" title="程序运行初始化后内存的变化"></a>程序运行初始化后内存的变化</h2><p>FLASH是ROM存储器，在工作的情况下只能用来读，不能立刻写出或者修改内容，因此我们在程序运行之前需要把数据移到SRAM中，这是一种读写速度块，掉电不保存的存储器。</p>
+<p><img src="/2024/04/01/C-Cpp-Memory/%E5%88%9D%E5%A7%8B%E5%8C%96%E5%89%8D%E5%86%85%E5%AD%98.png" alt="初始化前内存"><br>上电之后拷贝FLASH里面的数据到SRAM中，在SRAM创建堆栈运行程序，程序运行过程中仅读取SRAM，而不再对FLASH中的RW-data进行改动。等程序下一次上电时，再次将FLASH中的数据拷贝到SRAM中，以保证FLASH数据的原始状态。</p>
+<p><img src="/2024/04/01/C-Cpp-Memory/%E5%88%9D%E5%A7%8B%E5%8C%96%E5%90%8E%E5%86%85%E5%AD%98.png" alt="初始化后内存"></p>
+<p>对于以Cortex-M4为内核的芯片，C程序在Keil中经过编译运行获得可执行文件，由单片机下载保存到内存中，此时代码和数据按照其属性（全局、静态）被划分成段保存于FLASH对应的空间内，数据和代码保存到同一空间内，对应CPU的哈佛结构。</p>
+<blockquote>
+<p>单片机复位上电之后，FLASH中的读写数据会被拷贝到SRAM中，并在SRAM中建立堆栈运行程序。断电之后，SRAM中的数据掉电丢失，而FLASH中的数据等到下一次上电再次拷贝到SRAM中。</p>
+</blockquote>
+<h1 id="C-的内存分配"><a href="#C-的内存分配" class="headerlink" title="C++ 的内存分配"></a>C++ 的内存分配</h1><p>C++编译器将数据和函数分开，类的所有对象都调用相同的函数，只是使用不同的数据。 C++的内存通常分为四个区：全局数据区（data area），代码区（code area），栈区（stack area）和堆区（heap area）（即自由存储区）。<br><img src="/2024/04/01/C-Cpp-Memory/Cpp%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D.png" alt="C++ 的内存分配"><br>全局和静态，常量是被存储在全局数据区，成员函数和非成员函数被存储在代码区，而函数运行的参数，局部变量，返回数据，返回地址等存放在栈区，余下的部分由堆区负责。<br>因此，一个类在被定义的时候是被存放在代码区，创建这个类的全局或者静态变量存放于全局数据区，如果是临时变量就存放于栈区，如果用户申请的空间则存放在堆区。</p>
+<blockquote>
+<p>类的静态成员变量在类定义的时候就已经被创建于全局数据区，而非静态成员变量在类的实例化过程中才在栈区或者堆区分配内存的，是为每个对象生成一个拷贝，所以它是属于对象的。 应当说明，常常说的“某某对象的成员函数”是从逻辑的角度说明的，但是从物理的角度而言，成员函数是存放在类的代码区中。</p>
+</blockquote>
+<h1 id="修订记录"><a href="#修订记录" class="headerlink" title="修订记录"></a>修订记录</h1><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Time</strong></td>
+<td><strong>Version</strong></td>
+<td><strong>Name</strong></td>
+<td><strong>Content</strong></td>
+</tr>
+<tr>
+<td>2024-03-25</td>
+<td>V1.0</td>
+<td>SQ</td>
+<td>添加C++内存分配方式</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1>
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#C-%E4%B8%8E-MCU-%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="toc-number">1.</span> <span class="toc-text">C 与 MCU 内存分配</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E4%B8%AD%E7%9A%84C%E7%A8%8B%E5%BA%8F%E5%AD%98%E5%82%A8"><span class="toc-number">1.1.</span> <span class="toc-text">内存中的C程序存储</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91%E4%B8%BA%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6"><span class="toc-number">1.2.</span> <span class="toc-text">C代码编译为可执行文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E4%BF%9D%E5%AD%98%E4%BA%8E-Code%EF%BC%88FLASH%EF%BC%89%E5%8C%BA%E5%9F%9F"><span class="toc-number">1.3.</span> <span class="toc-text">代码保存于 Code（FLASH）区域</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%A6%E5%8F%B7%E6%98%A0%E5%B0%84%E8%A1%A8-Image-Symbol-Table"><span class="toc-number">1.3.1.</span> <span class="toc-text">符号映射表 Image Symbol Table</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">1.3.2.</span> <span class="toc-text">小结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8B%93%E5%B1%95%EF%BC%9Amap%E6%96%87%E4%BB%B6%E4%B8%AD%E5%90%8D%E8%AF%8D%E5%8F%82%E8%80%83"><span class="toc-number">1.3.3.</span> <span class="toc-text">拓展：map文件中名词参考</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E5%88%9D%E5%A7%8B%E5%8C%96%E5%90%8E%E5%86%85%E5%AD%98%E7%9A%84%E5%8F%98%E5%8C%96"><span class="toc-number">1.4.</span> <span class="toc-text">程序运行初始化后内存的变化</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#C-%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="toc-number">2.</span> <span class="toc-text">C++ 的内存分配</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BF%AE%E8%AE%A2%E8%AE%B0%E5%BD%95"><span class="toc-number">3.</span> <span class="toc-text">修订记录</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">4.</span> <span class="toc-text">参考资料</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://intermars.github.io/2024/04/01/C-Cpp-Memory/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&text=C_Cpp Memory"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&title=C_Cpp Memory"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&is_video=false&description=C_Cpp Memory"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=C_Cpp Memory&body=Check out this article: https://intermars.github.io/2024/04/01/C-Cpp-Memory/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&title=C_Cpp Memory"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&title=C_Cpp Memory"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&title=C_Cpp Memory"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&title=C_Cpp Memory"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&name=C_Cpp Memory&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://intermars.github.io/2024/04/01/C-Cpp-Memory/&t=C_Cpp Memory"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Sandwich Joe
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
