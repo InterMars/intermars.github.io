@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Quadratic Bezier - distance 2Dhttps:&#x2F;&#x2F;www.shadertoy.com&#x2F;view&#x2F;MlKcDD源码分析学习👆Quadratic Bezier - distance 2D 计算贝塞尔曲线的SDF值绘制贝塞尔。 根据源码， mainImage 代码调用顺序：  第一次调用，mainImage -&gt; sdBezier，绘制主要的贝塞尔曲线。![[Paste">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Quadratic Bezier - distance 2D">
+<meta property="og:url" content="http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Quadratic Bezier - distance 2Dhttps:&#x2F;&#x2F;www.shadertoy.com&#x2F;view&#x2F;MlKcDD源码分析学习👆Quadratic Bezier - distance 2D 计算贝塞尔曲线的SDF值绘制贝塞尔。 根据源码， mainImage 代码调用顺序：  第一次调用，mainImage -&gt; sdBezier，绘制主要的贝塞尔曲线。![[Paste">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-08-04T10:28:14.000Z">
+<meta property="article:modified_time" content="2024-08-04T10:28:52.793Z">
+<meta property="article:author" content="SQ">
+<meta property="article:tag" content="ShaderToy">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Quadratic Bezier - distance 2D</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/InterMars">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/08/04/Smooth-Mouse-Drawing/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&text=Quadratic Bezier - distance 2D"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&title=Quadratic Bezier - distance 2D"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&is_video=false&description=Quadratic Bezier - distance 2D"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Quadratic Bezier - distance 2D&body=Check out this article: http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&title=Quadratic Bezier - distance 2D"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&title=Quadratic Bezier - distance 2D"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&title=Quadratic Bezier - distance 2D"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&title=Quadratic Bezier - distance 2D"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&name=Quadratic Bezier - distance 2D&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&t=Quadratic Bezier - distance 2D"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Quadratic-Bezier-distance-2D"><span class="toc-number">1.</span> <span class="toc-text">Quadratic Bezier - distance 2D</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E5%87%BD%E6%95%B0"><span class="toc-number">1.1.</span> <span class="toc-text">主函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B4%9D%E5%A1%9E%E5%B0%94%E8%B7%9D%E7%A6%BB%E5%87%BD%E6%95%B0-%E7%B2%BE%E7%A1%AE%E7%89%88%E6%9C%AC"><span class="toc-number">1.2.</span> <span class="toc-text">贝塞尔距离函数-精确版本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%EF%BC%9A-%E2%88%A5B-t-pos%E2%88%A5-2"><span class="toc-number">1.2.1.</span> <span class="toc-text">计算：$∥B(t)-pos∥^2$</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B1%82%E5%AF%BC-%E2%88%A5B-t-pos%E2%88%A5-2-%E5%BE%97%E5%88%B0%E6%9C%80%E5%B0%8F%E5%80%BC%E5%AF%B9%E5%BA%94%E7%9A%84-t"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">求导 $∥B(t)-pos∥^2$ 得到最小值对应的 t</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%EF%BC%9A%E4%B8%80%E5%85%83%E4%B8%89%E6%AC%A1%E5%A4%9A%E9%A1%B9%E5%BC%8F%E6%B1%82%E8%A7%A3%EF%BC%88%E5%8D%A1%E5%B0%94%E8%BE%BE%E8%AF%BA%E6%B3%95%EF%BC%89"><span class="toc-number">1.2.2.</span> <span class="toc-text">计算：一元三次多项式求解（卡尔达诺法）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%EF%BC%9A%E5%BE%AE%E7%A7%AF%E5%88%86%E7%89%9B%E9%A1%BF%E6%B3%95"><span class="toc-number">1.2.3.</span> <span class="toc-text">计算：微积分牛顿法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%B0%8F%E7%BB%93"><span class="toc-number">1.2.4.</span> <span class="toc-text">计算小结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B4%9D%E5%A1%9E%E5%B0%94%E8%B7%9D%E7%A6%BB%E5%87%BD%E6%95%B0-%E4%BB%A3%E7%A0%81%E9%80%90%E8%A1%8C%E8%A7%A3%E6%9E%90"><span class="toc-number">1.3.</span> <span class="toc-text">贝塞尔距离函数-代码逐行解析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%84%9F%E6%82%9F"><span class="toc-number">1.4.</span> <span class="toc-text">感悟</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Quadratic Bezier - distance 2D
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">SQ</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-08-04T10:28:14.000Z" class="dt-published" itemprop="datePublished">2024-08-04</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/ShaderToy/" rel="tag">ShaderToy</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="Quadratic-Bezier-distance-2D"><a href="#Quadratic-Bezier-distance-2D" class="headerlink" title="Quadratic Bezier - distance 2D"></a>Quadratic Bezier - distance 2D</h1><p><a target="_blank" rel="noopener" href="https://www.shadertoy.com/view/MlKcDD">https://www.shadertoy.com/view/MlKcDD</a><br>源码分析学习👆<br>Quadratic Bezier - distance 2D 计算贝塞尔曲线的SDF值绘制贝塞尔。</p>
+<p>根据源码， <code>mainImage</code> 代码调用顺序：</p>
+<ol>
+<li>第一次调用，<code>mainImage</code> -&gt; <code>sdBezier</code>，绘制主要的贝塞尔曲线。![[Pasted image 20240711002738.png]]</li>
+<li><code>mainImage</code> -&gt; <code>sdBezier</code>，黄色圆圈，第二次调用绘制鼠标操作的圆形，用于表示鼠标选中像素点同贝塞尔曲线的SDF关系。![[Pasted image 20240711002638.png]]</li>
+<li><code>mainImage</code> -&gt;<code>udSegment</code>，红色线段连接贝塞尔曲线的起点和终点，绘制贝塞尔曲线起点终点和控制点。<br>![[Pasted image 20240711002619.png]]</li>
+</ol>
+<h2 id="主函数"><a href="#主函数" class="headerlink" title="主函数"></a>主函数</h2><figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> mainImage( <span class="keyword">out</span> <span class="type">vec4</span> fragColor, <span class="keyword">in</span> <span class="type">vec2</span> fragCoord )</span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 将片段着色器坐标系转换到 [-1, 1]范围的标准化坐标系中。</span></span><br><span class="line">	<span class="type">vec2</span> p = (<span class="number">2.0</span>*fragCoord-iResolution.xy)/iResolution.y;</span><br><span class="line">	<span class="comment">// 将鼠标的坐标系转换到 [-1, 1]范围的标准化坐标系中。</span></span><br><span class="line">    <span class="type">vec2</span> m = (<span class="number">2.0</span>*iMouse.xy-iResolution.xy)/iResolution.y;</span><br><span class="line">    <span class="comment">// 计算贝塞尔曲线的控制点，iTime 表示用时间控制。</span></span><br><span class="line">	<span class="type">vec2</span> v0 = <span class="type">vec2</span>(<span class="number">1.3</span>,<span class="number">0.9</span>)*<span class="built_in">cos</span>(iTime*<span class="number">0.5</span> + <span class="type">vec2</span>(<span class="number">0.0</span>,<span class="number">5.0</span>) );</span><br><span class="line">    <span class="type">vec2</span> v1 = <span class="type">vec2</span>(<span class="number">1.3</span>,<span class="number">0.9</span>)*<span class="built_in">cos</span>(iTime*<span class="number">0.6</span> + <span class="type">vec2</span>(<span class="number">3.0</span>,<span class="number">4.0</span>) );</span><br><span class="line">    <span class="type">vec2</span> v2 = <span class="type">vec2</span>(<span class="number">1.3</span>,<span class="number">0.9</span>)*<span class="built_in">cos</span>(iTime*<span class="number">0.7</span> + <span class="type">vec2</span>(<span class="number">2.0</span>,<span class="number">0.0</span>) );</span><br><span class="line">    </span><br><span class="line">    <span class="type">vec2</span> kk;</span><br><span class="line">    <span class="comment">// 1️⃣绘制主要的贝塞尔曲线。</span></span><br><span class="line">    <span class="type">float</span> d = sdBezier( p, v0,v1,v2, kk ); </span><br><span class="line">    <span class="comment">// 根据 d 计算颜色值，呈现渐变效果。</span></span><br><span class="line">    <span class="type">float</span> f = <span class="built_in">smoothstep</span>(<span class="number">-0.2</span>,<span class="number">0.2</span>,<span class="built_in">cos</span>(<span class="number">2.0</span>*iTime));</span><br><span class="line">    <span class="type">vec3</span> col = (d&gt;<span class="number">0.0</span>) ? <span class="type">vec3</span>(<span class="number">0.9</span>,<span class="number">0.6</span>,<span class="number">0.3</span>) : <span class="type">vec3</span>(<span class="number">0.65</span>,<span class="number">0.85</span>,<span class="number">1.0</span>);</span><br><span class="line">	col *= <span class="number">1.0</span> - <span class="built_in">exp</span>(<span class="number">-4.0</span>*<span class="built_in">abs</span>(d));</span><br><span class="line">	col *= <span class="number">0.8</span> + <span class="number">0.2</span>*<span class="built_in">cos</span>(<span class="number">110.0</span>*d);</span><br><span class="line">	col = <span class="built_in">mix</span>( col, <span class="type">vec3</span>(<span class="number">1.0</span>), <span class="number">1.0</span>-<span class="built_in">smoothstep</span>(<span class="number">0.0</span>,<span class="number">0.015</span>,<span class="built_in">abs</span>(d)) );</span><br><span class="line">	</span><br><span class="line">    <span class="comment">// 绘制鼠标辅助效果</span></span><br><span class="line">    <span class="keyword">if</span>( iMouse.z&gt;<span class="number">0.001</span> )</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="type">vec2</span> q;</span><br><span class="line">    <span class="comment">// 2️⃣第二次调用绘制鼠标操作的圆形，用于表示鼠标选中像素点同贝塞尔曲线的SDF关系。</span></span><br><span class="line">    d = sdBezier(m, v0,v1,v2, q ); <span class="comment">// 鼠标选中的点与贝塞尔曲线的距离值 d 以及对应贝塞尔曲线上的位置点 q。</span></span><br><span class="line">    <span class="comment">// 鼠标选中坐标和像素点距离同像素点和贝塞尔曲线距离越接近，将颜色混合为黄色</span></span><br><span class="line">    col = <span class="built_in">mix</span>(col, <span class="type">vec3</span>(<span class="number">1.0</span>,<span class="number">1.0</span>,<span class="number">0.0</span>), <span class="number">1.0</span>-<span class="built_in">smoothstep</span>(<span class="number">0.0</span>, <span class="number">0.005</span>, <span class="built_in">abs</span>(<span class="built_in">length</span>(p-m)-<span class="built_in">abs</span>(d))<span class="number">-0.0025</span>));</span><br><span class="line">    <span class="comment">// 鼠标选中坐标和像素点距离越接近，将颜色混合为黄色</span></span><br><span class="line">    col = <span class="built_in">mix</span>(col, <span class="type">vec3</span>(<span class="number">1.0</span>,<span class="number">1.0</span>,<span class="number">0.0</span>), <span class="number">1.0</span>-<span class="built_in">smoothstep</span>(<span class="number">0.0</span>, <span class="number">0.005</span>, <span class="built_in">length</span>(p-m)<span class="number">-0.015</span>));</span><br><span class="line">    <span class="comment">// 像素点和像素点在贝塞尔曲线上的点的距离越近，将颜色混合为黄色</span></span><br><span class="line">    col = <span class="built_in">mix</span>(col, <span class="type">vec3</span>(<span class="number">1.0</span>,<span class="number">1.0</span>,<span class="number">0.0</span>), <span class="number">1.0</span>-<span class="built_in">smoothstep</span>(<span class="number">0.0</span>, <span class="number">0.005</span>, <span class="built_in">length</span>(p-q)<span class="number">-0.015</span>));</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span>( <span class="built_in">cos</span>(<span class="number">0.5</span>*iTime)&lt;<span class="number">-0.5</span> )</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="comment">// 3️⃣绘制贝塞尔曲线起点终点和控制点的连线。</span></span><br><span class="line">        d = <span class="built_in">min</span>( udSegment(p,v0,v1),</span><br><span class="line">                 udSegment(p,v1,v2) );</span><br><span class="line">        d = <span class="built_in">min</span>( d, <span class="built_in">length</span>(p-v0)<span class="number">-0.02</span> );</span><br><span class="line">        d = <span class="built_in">min</span>( d, <span class="built_in">length</span>(p-v1)<span class="number">-0.02</span> );</span><br><span class="line">        d = <span class="built_in">min</span>( d, <span class="built_in">length</span>(p-v2)<span class="number">-0.02</span> );</span><br><span class="line">        col = <span class="built_in">mix</span>( col, <span class="type">vec3</span>(<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>), <span class="number">1.0</span>-<span class="built_in">smoothstep</span>(<span class="number">0.0</span>,<span class="number">0.007</span>,d) );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	fragColor = <span class="type">vec4</span>(col,<span class="number">1.0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关于贝塞尔的计算，源码里面提供了两个方式，精确的方法使用SDF，近似方法适用于曲线附近的小区域，本文只讲第一种SDF的方法，计算中涉及到的数学知识为一元三次多项式求解，微积分牛顿法，细节可参照对应标题。</p>
+<h2 id="贝塞尔距离函数-精确版本"><a href="#贝塞尔距离函数-精确版本" class="headerlink" title="贝塞尔距离函数-精确版本"></a>贝塞尔距离函数-精确版本</h2><p><code>sdBezier</code>函数返回：</p>
+<ol>
+<li><code>pos</code> 到贝塞尔曲线上的最短距离，即以贝塞尔曲线为中心的SDF值。</li>
+<li>像素点对应在贝塞尔曲线上的位置 <code>outQ</code>。</li>
+</ol>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// signed distance to a quadratic bezier</span></span><br><span class="line"><span class="type">float</span> sdBezier( <span class="keyword">in</span> <span class="type">vec2</span> pos, <span class="keyword">in</span> <span class="type">vec2</span> A, <span class="keyword">in</span> <span class="type">vec2</span> B, <span class="keyword">in</span> <span class="type">vec2</span> C, <span class="keyword">out</span> <span class="type">vec2</span> outQ )</span><br></pre></td></tr></table></figure>
+
+<p>返回<code>pos</code>到贝塞尔曲线上的SDF值，也就是贝塞尔曲线 $B(t)$ 到 <code>pos</code> 的最小距离<br>$$∥B(t)-pos∥^2$$</p>
+<h3 id="计算：-∥B-t-pos∥-2"><a href="#计算：-∥B-t-pos∥-2" class="headerlink" title="计算：$∥B(t)-pos∥^2$"></a>计算：$∥B(t)-pos∥^2$</h3><p>贝塞尔曲线的公式展开为：<br>$$B(t)&#x3D;(1−t)^3⋅P_0+3(1−t)^2⋅t⋅P_1+3(1−t)⋅t^2⋅P_2+t^3⋅P_3$$<br>根据贝塞尔代数公式和函数的参数 <code>in vec2 pos</code> 和控制点 <code>in vec2 A, in vec2 B, in vec2 C</code>，结合得到：<br>$$B(t)&#x3D;(1−t)^2⋅A+2(1−t)⋅t⋅B+t^2⋅C$$<br>展开这个公式，得到 $t$ 的三次项方程。<br>$$B(t)&#x3D;(A−2B+C)t^2+2(B−A)t+A$$<br>其中：<br>$b&#x3D;A−2B+C$<br>$a&#x3D;B−A$<br>将这个公式记作：<br>$$B(t)&#x3D;bt^2+2at+A$$</p>
+<p><strong>用 $∥B(t)-pos∥^2$ 得到曲线到 <code>pos</code> 的最小距离，代入上面的公式：</strong><br>$$B(t)-pos&#x3D;bt^2+2at+A-pos$$<br>记作：<br>$$B(t)-pos&#x3D;bt^2+ct+d$$<br>其中：<br>$a&#x3D;B−A$<br>$b&#x3D;A−2B+C$<br>$c&#x3D;2a$<br>$d&#x3D;A-pos$</p>
+<h4 id="求导-∥B-t-pos∥-2-得到最小值对应的-t"><a href="#求导-∥B-t-pos∥-2-得到最小值对应的-t" class="headerlink" title="求导 $∥B(t)-pos∥^2$ 得到最小值对应的 t"></a>求导 $∥B(t)-pos∥^2$ 得到最小值对应的 t</h4><p>接下来就是一些数学计算方法，$∥B(t)-pos∥^2$ 展开得到：<br>$$∥B(t)−pos∥^2&#x3D;(bt^2+2at+d)⋅(bt^2+2at+d)$$<br>合并同类项后，得到一个一元四次方程：<br>$$∥B(t)−pos∥^2&#x3D;(b⋅b)t^4+4(a⋅b)t^3+(4(a⋅a)+2(d⋅b))t^2+4(d⋅a)t+(d⋅d)$$</p>
+<p><strong>求 $∥B(t)-pos∥^2$ 的最小值，等同于对 $∥B(t)-pos∥^2$ 求导，得到当 $∥B(t)-pos∥^2&#x3D;0$ 时的 $t$ 的值。</strong><br>接下求 $t$ 的一元三次多项式的根，得到 $∥B(t)-pos∥^2$ 的最小值对应的 $t$，即 SDF 值。</p>
+<p>$∥B(t)−pos∥^2&#x3D;(b⋅b)t^4+4(a⋅b)t^3+(4(a⋅a)+2(d⋅b))t^2+4(d⋅a)t+(d⋅d)$</p>
+<p>$&#x3D;t^4+\frac{4(a⋅b)}{(b⋅b)}t^3+\frac{4(a⋅a)+2(d⋅b)}{(b⋅b)}t^2+\frac{4(d⋅a)}{(b⋅b)}t+\frac{(d⋅d)}{(b⋅b)}$    </p>
+<p>对 $t$ 求导：<br>$$4t^3+\frac{12(a⋅b)}{(b⋅b)}t^2+\frac{8(a⋅a)+4(d⋅b)}{(b⋅b)}t+\frac{4(d⋅a)}{(b⋅b)}&#x3D;0$$<br>化简：<br>$$t^3+\frac{3(a⋅b)}{(b⋅b)}t^2+\frac{2(a⋅a)+(d⋅b)}{(b⋅b)}t+\frac{(d⋅a)}{(b⋅b)}&#x3D;0$$<br>根据方程系数：<br>$$a&#x3D;1$$<br>$$b&#x3D;\frac{3(\vec{a}⋅\vec{b})}{(\vec{b}⋅\vec{b})}$$<br>$$c&#x3D;\frac{2(\vec{a}⋅\vec{a})+(\vec{d}⋅\vec{b})}{(\vec{b}⋅\vec{b})}$$<br>$$d&#x3D;\frac{(\vec{d}⋅\vec{a})}{(\vec{b}⋅\vec{b})}$$</p>
+<p>代入下面的公式中（求解三次方程的公式）：<br>$$p&#x3D;\frac{3ac-b^2}{3a^2}$$<br>$$q&#x3D;\frac{27a^2d-9abc+2b^3}{27a^3}$$  </p>
+<p>得到：</p>
+<p>$p&#x3D;\frac{2(\vec{a}⋅\vec{a})+(\vec{d}⋅\vec{b})}{(\vec{b}⋅\vec{b})}-3(\frac{(\vec{a}⋅\vec{b})}{(\vec{b}⋅\vec{b})})^2$  </p>
+<p>代码中 $p_{code}$ 用的是：<br>$p_{code}&#x3D;\frac{p}{3}&#x3D;ky - kx^2$<br>所以，在代码中 <code>float p</code> 的计算对应数学中都是 $\frac{p}{3}$，为了和代码保持同步，下面都会使用 $p_{code}$ 表示代码中的计算。</p>
+<p>$q&#x3D;\frac{(\vec{d}⋅\vec{a})}{(\vec{b}⋅\vec{b})}-\frac{(\vec{a}⋅\vec{b})}{(\vec{b}⋅\vec{b})}\frac{2(\vec{a}⋅\vec{a})+(\vec{d}⋅\vec{b})}{(\vec{b}⋅\vec{b})}+2(\frac{(\vec{a}⋅\vec{b})}{(\vec{b}⋅\vec{b})})^3$</p>
+<p>$&#x3D;\frac{(\vec{d}⋅\vec{a})}{(\vec{b}⋅\vec{b})}+\frac{(\vec{a}⋅\vec{b})}{(\vec{b}⋅\vec{b})}(\frac{2(\vec{a}⋅\vec{a})+(\vec{d}⋅\vec{b})}{(\vec{b}⋅\vec{b})}+2(\frac{(\vec{a}⋅\vec{b})}{(\vec{b}⋅\vec{b})})^2)$</p>
+<p>将👆化简为 <code>kk,kx,ky,kz</code>等系数：  </p>
+<p>$kk&#x3D;\frac{1}{\vec{b}⋅\vec{b}}$<br>$kx&#x3D;kk⋅(\vec{a}⋅\vec{b})&#x3D;\frac{\vec{a}⋅\vec{b}}{\vec{b}⋅\vec{b}}$  </p>
+<p>$kx$ 表示 $\vec{a}$ 在 $\vec{b}$ 上的投影长度除以 $\vec{b}$ 的长度，即投影向量相对于被投影向量长度的占比。  </p>
+<p>$ky&#x3D;kk⋅\frac{2(\vec{a}⋅\vec{a})+(\vec{d}⋅\vec{b})}{3}&#x3D;\frac{2(\vec{a}⋅\vec{a})+(\vec{d}⋅\vec{b})}{3(\vec{b}⋅\vec{b})}$<br>$kz&#x3D;kk⋅(\vec{d}⋅\vec{a})&#x3D;\frac{\vec{d}⋅\vec{a}}{\vec{b}⋅\vec{b}}$</p>
+<p>将系数带入，得到可以用 $kx$ 和 $ky$ 以及 $kz$ 表示的 $p$ 和 $q$：<br>$$p_{code}&#x3D;ky−kx^2$$<br>$$q&#x3D;kx(2kx^2−3ky)+kz$$<br>在数学上，$\Delta$ 的公式：<br> $\Delta&#x3D;(\frac{q}{2})^2+(\frac{p_{math}}{3})^3$<br> 代码里面：<br>$\Delta_{code}&#x3D;4\Delta&#x3D;q^2+4p_{code}^3$</p>
+<p>当 $\Delta_{code}\ge 0.0$ 时，按照公式有实根：<br>$$t &#x3D; \sqrt[3]{-\frac{q}{2} + \sqrt{\frac{\Delta_{code}}{4}}} + \sqrt[3]{-\frac{q}{2} - \sqrt{\frac{\Delta_{code}}{4}}}$$<br>$$&#x3D; \sqrt[3]{\frac{1}{2}(\sqrt[2]{\Delta_{code}}-q)} + \sqrt[3]{\frac{1}{2}(-\sqrt[2]{\Delta_{code}}-q)}$$</p>
+<p>当 $\Delta&lt; 0.0$ 时，有三个根，选择距离最小的点作为返回结果。<br>$$R&#x3D;\sqrt{-(p_{code}^{3})}$$<br>$$\theta &#x3D; \arccos\left(\frac{-q}{2R}\right)$$<br>在代码中，$z&#x3D;\sqrt{-p_{code}}$，$v&#x3D;\frac{arccos(\frac{q}{2p\sqrt{-p}})}{3}&#x3D;\frac{\theta}{3}$，<br>$$m\approx cos(v)&#x3D;cos(\frac{arccos(\frac{q}{2p\sqrt{-p}})}{3})&#x3D;cos(\frac{\theta}{3})$$<br>$$n&#x3D;\sqrt{1-m^2}\approx\sqrt{1-cos^2(v)}&#x3D;sin(v)$$<br>将 $n*\sqrt{3}$ 便于计算，则三个根对应代码里面的变量：<br>$$y_1 &#x3D; 2\sqrt{-(\frac{p}{3})} \cos\left(\frac{\theta}{3}\right) &#x3D; z *2m$$</p>
+<p>$$y_2 &#x3D; 2\sqrt{-(\frac{p}{3})} \cos\left(\frac{\theta + 2\pi}{3}\right)&#x3D;\sqrt{-(\frac{p}{3})}[-cos(\frac{\theta}{3})-\sqrt{3}sin(\frac{\theta}{3})]&#x3D;z*(-m-n)$$</p>
+<p>$$y_3 &#x3D; 2\sqrt{-(\frac{p}{3})} \cos\left(\frac{\theta + 4\pi}{3}\right)&#x3D;\sqrt{-(\frac{p}{3})}[-cos(\frac{\theta}{3})+\sqrt{3}sin(\frac{\theta}{3})]&#x3D;z * (n-m)$$</p>
+<h3 id="计算：一元三次多项式求解（卡尔达诺法）"><a href="#计算：一元三次多项式求解（卡尔达诺法）" class="headerlink" title="计算：一元三次多项式求解（卡尔达诺法）"></a>计算：一元三次多项式求解（卡尔达诺法）</h3><p>已知任意一元三次方程 $ax^3+bx^2+cx+d&#x3D;0$ 都可以改写为：$y^3+py+q&#x3D;0$ ($x&#x3D;y-\frac{b}{3a}$)，其中：<br>$$p&#x3D;\frac{3ac-b^2}{3a^2}$$<br>$$q&#x3D;\frac{27a^2d-9abc+2b^3}{27a^3}$$  </p>
+<p>并且有公式 $\Delta&#x3D;(\frac{q}{2})^2+(\frac{p}{3})^3$  ，具有以下情况：<br>$\Delta&gt;0$，一个实根和两个复根  </p>
+<p>$$y_1 &#x3D; \sqrt[3]{-\frac{q}{2} + \sqrt{\frac{\Delta}{4}}} + \sqrt[3]{-\frac{q}{2} - \sqrt{\frac{\Delta}{4}}}$$</p>
+<p>$\Delta&#x3D;0$，三个实根</p>
+<ol>
+<li>当 $p&#x3D;q&#x3D;0$ 时，有唯一的零根：$y&#x3D;0$</li>
+<li>当 $p&#x3D;q\neq0$ 时，三个实根里面有两个相等<br>$$y_1 &#x3D; 2 \sqrt[3]{-\frac{q}{2}}$$<br>$$y_2 &#x3D; y_3 &#x3D; -\sqrt[3]{-\frac{q}{2}}$$<br>$\Delta&lt;0$ 时，有三个不等实根。</li>
+</ol>
+<p>令:<br>$$R &#x3D; \sqrt{-(\frac{p}{3})^3}$$</p>
+<p>$$\theta &#x3D; \arccos\left(\frac{-q}{2R}\right)$$</p>
+<p>实根为：</p>
+<p>$$y_1 &#x3D; 2\sqrt{-(\frac{p}{3})} \cos\left(\frac{\theta}{3}\right)$$</p>
+<p>$$y_2 &#x3D; 2\sqrt{-(\frac{p}{3})} \cos\left(\frac{\theta + 2\pi}{3}\right)&#x3D;\sqrt{-(\frac{p}{3})}[-cos(\frac{\theta}{3})-\sqrt{3}sin(\frac{\theta}{3})]$$</p>
+<p>$$y_3 &#x3D; 2\sqrt{-(\frac{p}{3})} \cos\left(\frac{\theta + 4\pi}{3}\right)&#x3D;\sqrt{-(\frac{p}{3})}[-cos(\frac{\theta}{3})+\sqrt{3}sin(\frac{\theta}{3})]$$</p>
+<p>以上为代码省略的计算过程，得到的实根为贝塞尔曲线 $B(t)$ 到 <code>pos</code> 的 SDF 值。</p>
+<h3 id="计算：微积分牛顿法"><a href="#计算：微积分牛顿法" class="headerlink" title="计算：微积分牛顿法"></a>计算：微积分牛顿法</h3><p>源码中使用了牛顿法来优化得到的结果。牛顿迭代法的特性决定了只需要很少的迭代就能够达到很高的精度。</p>
+<p>$$x_{n+1}&#x3D;x_{n}-\frac{f^{‘}(x_n)}{f^{‘’}(x_{n})}$$</p>
+<h3 id="计算小结"><a href="#计算小结" class="headerlink" title="计算小结"></a>计算小结</h3><p>确定 $∥B(t)-pos∥^2$ 为最小距离函数，对其求导得到极值：<br>$$\mathrm{d(∥B(t)-pos∥^2)}t&#x3D;t^3+3tp_{code}+q$$<br>带入一元三次方程的计算公式，得到最小值 t，带回后，得到贝塞尔曲线到 <code>pos</code>的SDF值。</p>
+<h2 id="贝塞尔距离函数-代码逐行解析"><a href="#贝塞尔距离函数-代码逐行解析" class="headerlink" title="贝塞尔距离函数-代码逐行解析"></a>贝塞尔距离函数-代码逐行解析</h2><p>代码中，先计算出距离最小的 t 值，然后带回方程 $B(t)-pos&#x3D;bt^2+ct+d$，计算出最小距离值。</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">float</span> sdBezier( <span class="keyword">in</span> <span class="type">vec2</span> pos, <span class="keyword">in</span> <span class="type">vec2</span> A, <span class="keyword">in</span> <span class="type">vec2</span> B, <span class="keyword">in</span> <span class="type">vec2</span> C, <span class="keyword">out</span> <span class="type">vec2</span> outQ )</span><br><span class="line">&#123;    </span><br><span class="line">	<span class="comment">// 将贝塞尔公式转换为关于t的B(t)-pos的标准方程参数</span></span><br><span class="line">    <span class="type">vec2</span> a = B - A;</span><br><span class="line">    <span class="type">vec2</span> b = A - <span class="number">2.0</span>*B + C;</span><br><span class="line">    <span class="type">vec2</span> c = a * <span class="number">2.0</span>;</span><br><span class="line">    <span class="type">vec2</span> d = A - pos;</span><br><span class="line">	<span class="comment">// 用于解三次方程的辅助项</span></span><br><span class="line">    <span class="comment">// cubic to be solved (kx*=3 and ky*=3)</span></span><br><span class="line">    <span class="type">float</span> kk = <span class="number">1.0</span>/<span class="built_in">dot</span>(b,b);</span><br><span class="line">    <span class="type">float</span> kx = kk * <span class="built_in">dot</span>(a,b);</span><br><span class="line">    <span class="type">float</span> ky = kk * (<span class="number">2.0</span>*<span class="built_in">dot</span>(a,a)+<span class="built_in">dot</span>(d,b))/<span class="number">3.0</span>;</span><br><span class="line">    <span class="type">float</span> kz = kk * <span class="built_in">dot</span>(d,a);      </span><br><span class="line"></span><br><span class="line">    <span class="type">float</span> res = <span class="number">0.0</span>;</span><br><span class="line">    <span class="type">float</span> sgn = <span class="number">0.0</span>;</span><br><span class="line">	<span class="comment">// 按照数学计算公式，此处：p/3 = p_&#123;code&#125; =&gt;float p</span></span><br><span class="line">    <span class="type">float</span> p  = ky - kx*kx;</span><br><span class="line">    <span class="type">float</span> q  = kx*(<span class="number">2.0</span>*kx*kx - <span class="number">3.0</span>*ky) + kz;</span><br><span class="line">    <span class="comment">// (p/3)^3</span></span><br><span class="line">    <span class="type">float</span> p3 = p*p*p;</span><br><span class="line">    <span class="type">float</span> q2 = q*q;</span><br><span class="line">    <span class="type">float</span> h  = q2 + <span class="number">4.0</span>*p3;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>( h&gt;=<span class="number">0.0</span> ) </span><br><span class="line">    &#123;   <span class="comment">// 1 root</span></span><br><span class="line">        h = <span class="built_in">sqrt</span>(h);</span><br><span class="line">        <span class="type">vec2</span> x = (<span class="type">vec2</span>(h,-h)-q)/<span class="number">2.0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="meta">#if 0</span></span><br><span class="line">        <span class="comment">// When p≈0 and p&lt;0, h-q has catastrophic cancelation. So, we do</span></span><br><span class="line">        <span class="comment">// h=√(q²+4p³)=q·√(1+4p³/q²)=q·√(1+w) instead. Now we approximate</span></span><br><span class="line">        <span class="comment">// √ by a linear Taylor expansion into h≈q(1+½w) so that the q&#x27;s</span></span><br><span class="line">        <span class="comment">// cancel each other in h-q. Expanding and simplifying further we</span></span><br><span class="line">        <span class="comment">// get x=vec2(p³/q,-p³/q-q). And using a second degree Taylor</span></span><br><span class="line">        <span class="comment">// expansion instead: x=vec2(k,-k-q) with k=(1-p³/q²)·p³/q</span></span><br><span class="line">        <span class="keyword">if</span>( <span class="built_in">abs</span>(p)&lt;<span class="number">0.001</span> )</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">float</span> k = p3/q;              <span class="comment">// linear approx</span></span><br><span class="line">          <span class="comment">//float k = (1.0-p3/q2)*p3/q;  // quadratic approx </span></span><br><span class="line">            x = <span class="type">vec2</span>(k,-k-q);  </span><br><span class="line">        &#125;</span><br><span class="line">        <span class="meta">#endif</span></span><br><span class="line">		<span class="comment">// 根据公式计算得到 t</span></span><br><span class="line">        <span class="type">vec2</span> uv = <span class="built_in">sign</span>(x)*<span class="built_in">pow</span>(<span class="built_in">abs</span>(x), <span class="type">vec2</span>(<span class="number">1.0</span>/<span class="number">3.0</span>));</span><br><span class="line">        <span class="type">float</span> t = uv.x + uv.y;</span><br><span class="line">		<span class="comment">// 牛顿迭代法，优化结果，提高精度</span></span><br><span class="line">		<span class="comment">// from NinjaKoala - single newton iteration to account for cancellation</span></span><br><span class="line">        t -= (t*(t*t+<span class="number">3.0</span>*p)+q)/(<span class="number">3.0</span>*t*t+<span class="number">3.0</span>*p);</span><br><span class="line">        <span class="comment">// 确保 t 在[0.0, 1.0] 中</span></span><br><span class="line">        t = <span class="built_in">clamp</span>( t-kx, <span class="number">0.0</span>, <span class="number">1.0</span> );</span><br><span class="line">        <span class="comment">// 将最小值t代回，计算贝塞尔曲线上对应pos的最小距离向量w</span></span><br><span class="line">        <span class="comment">// 这段是 B(t)-pos=bt^2+ct+d, 参考之前的计算过程</span></span><br><span class="line">        <span class="type">vec2</span>  w = d+(c+b*t)*t;</span><br><span class="line">        <span class="comment">// 得到距离 pos 最近的贝塞尔曲线上的点 outQ</span></span><br><span class="line">        outQ = w + pos;</span><br><span class="line">        <span class="comment">// 得到贝塞尔曲线到pos的最小距离平方</span></span><br><span class="line">        res = dot2(w);</span><br><span class="line">        <span class="comment">// c+2.0*b*t 是贝塞尔曲线在最小t处的切线方向，将t和w叉乘，得到w相对于贝塞尔曲线的位置。</span></span><br><span class="line">    	sgn = cro(c+<span class="number">2.0</span>*b*t,w);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> </span><br><span class="line">    &#123;   <span class="comment">// 3 roots</span></span><br><span class="line">        <span class="type">float</span> z = <span class="built_in">sqrt</span>(-p);</span><br><span class="line">        <span class="meta">#if 0</span></span><br><span class="line">        <span class="type">float</span> v = <span class="built_in">acos</span>(q/(p*z*<span class="number">2.0</span>))/<span class="number">3.0</span>;</span><br><span class="line">        <span class="type">float</span> m = <span class="built_in">cos</span>(v);</span><br><span class="line">        <span class="type">float</span> n = <span class="built_in">sin</span>(v);</span><br><span class="line">        <span class="meta">#else</span></span><br><span class="line">        <span class="comment">// cos_acos_3 是自建函数，用于逼近 cos 的效果，参考计算过程</span></span><br><span class="line">        <span class="type">float</span> m = cos_acos_3( q/(p*z*<span class="number">2.0</span>) );</span><br><span class="line">        <span class="comment">// n = sin(v)</span></span><br><span class="line">        <span class="type">float</span> n = <span class="built_in">sqrt</span>(<span class="number">1.0</span>-m*m);</span><br><span class="line">        <span class="meta">#endif</span></span><br><span class="line">        <span class="comment">// 三角函数的计算，看计算过程。</span></span><br><span class="line">        n *= <span class="built_in">sqrt</span>(<span class="number">3.0</span>);</span><br><span class="line">        <span class="type">vec3</span>  t = <span class="built_in">clamp</span>( <span class="type">vec3</span>(m+m,-n-m,n-m)*z-kx, <span class="number">0.0</span>, <span class="number">1.0</span> );</span><br><span class="line">        <span class="comment">// 选择两个根，找出距离最小的，也就是SDF值返回。</span></span><br><span class="line">        <span class="comment">// 为什么选择前两个根？</span></span><br><span class="line">        <span class="type">vec2</span>  qx=d+(c+b*t.x)*t.x; <span class="type">float</span> dx=dot2(qx), sx=cro(a+b*t.x,qx);</span><br><span class="line">        <span class="type">vec2</span>  qy=d+(c+b*t.y)*t.y; <span class="type">float</span> dy=dot2(qy), sy=cro(a+b*t.y,qy);</span><br><span class="line">        <span class="keyword">if</span>( dx&lt;dy ) &#123;res=dx;sgn=sx;outQ=qx+pos;&#125; <span class="keyword">else</span> &#123;res=dy;sgn=sy;outQ=qy+pos;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">sqrt</span>( res )*<span class="built_in">sign</span>(sgn);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="感悟"><a href="#感悟" class="headerlink" title="感悟"></a>感悟</h2><p>经过漫长的分析之后，终于读懂了这一长串代码背后的数学含义，从六月四号到今天，断断续续已经两个月了，在八月之前完成🏵️。<br>最开始以为只是些贝塞尔曲线的内容，但是随着深入研究，发现越来越多的“计算机数学”，体会到将数学知识转换成计算机代码的难度。<br>本文内容还有许多可以深入讨论的地方，比如“使用微积分牛顿法的好处？”，“为什么选择一元三次方程的前两个根而不选择第三个根？”这些话题我都很想再仔细研究下。<br>但这篇文章的完成是不能够拖下去的，以后会开续篇来解决这些问题。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/InterMars">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Quadratic-Bezier-distance-2D"><span class="toc-number">1.</span> <span class="toc-text">Quadratic Bezier - distance 2D</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E5%87%BD%E6%95%B0"><span class="toc-number">1.1.</span> <span class="toc-text">主函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B4%9D%E5%A1%9E%E5%B0%94%E8%B7%9D%E7%A6%BB%E5%87%BD%E6%95%B0-%E7%B2%BE%E7%A1%AE%E7%89%88%E6%9C%AC"><span class="toc-number">1.2.</span> <span class="toc-text">贝塞尔距离函数-精确版本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%EF%BC%9A-%E2%88%A5B-t-pos%E2%88%A5-2"><span class="toc-number">1.2.1.</span> <span class="toc-text">计算：$∥B(t)-pos∥^2$</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B1%82%E5%AF%BC-%E2%88%A5B-t-pos%E2%88%A5-2-%E5%BE%97%E5%88%B0%E6%9C%80%E5%B0%8F%E5%80%BC%E5%AF%B9%E5%BA%94%E7%9A%84-t"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">求导 $∥B(t)-pos∥^2$ 得到最小值对应的 t</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%EF%BC%9A%E4%B8%80%E5%85%83%E4%B8%89%E6%AC%A1%E5%A4%9A%E9%A1%B9%E5%BC%8F%E6%B1%82%E8%A7%A3%EF%BC%88%E5%8D%A1%E5%B0%94%E8%BE%BE%E8%AF%BA%E6%B3%95%EF%BC%89"><span class="toc-number">1.2.2.</span> <span class="toc-text">计算：一元三次多项式求解（卡尔达诺法）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%EF%BC%9A%E5%BE%AE%E7%A7%AF%E5%88%86%E7%89%9B%E9%A1%BF%E6%B3%95"><span class="toc-number">1.2.3.</span> <span class="toc-text">计算：微积分牛顿法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%B0%8F%E7%BB%93"><span class="toc-number">1.2.4.</span> <span class="toc-text">计算小结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B4%9D%E5%A1%9E%E5%B0%94%E8%B7%9D%E7%A6%BB%E5%87%BD%E6%95%B0-%E4%BB%A3%E7%A0%81%E9%80%90%E8%A1%8C%E8%A7%A3%E6%9E%90"><span class="toc-number">1.3.</span> <span class="toc-text">贝塞尔距离函数-代码逐行解析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%84%9F%E6%82%9F"><span class="toc-number">1.4.</span> <span class="toc-text">感悟</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&text=Quadratic Bezier - distance 2D"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&title=Quadratic Bezier - distance 2D"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&is_video=false&description=Quadratic Bezier - distance 2D"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Quadratic Bezier - distance 2D&body=Check out this article: http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&title=Quadratic Bezier - distance 2D"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&title=Quadratic Bezier - distance 2D"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&title=Quadratic Bezier - distance 2D"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&title=Quadratic Bezier - distance 2D"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&name=Quadratic Bezier - distance 2D&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2024/08/04/Quadratic-Bezier-distance-2D/&t=Quadratic Bezier - distance 2D"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    SQ
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/InterMars">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
